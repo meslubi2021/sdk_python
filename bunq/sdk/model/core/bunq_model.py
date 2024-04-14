@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import typing
-from typing import Dict, List
+from typing import Dict, List, Type
 
 from bunq.sdk.util.type_alias import T
 from bunq.sdk.http.bunq_response import BunqResponse
@@ -103,6 +103,29 @@ class BunqModel:
             item_unwrapped = item if wrapper is None else item[wrapper]
             item_deserialized = converter.deserialize(cls, item_unwrapped)
             array_deserialized.append(item_deserialized)
+
+        pagination = None
+
+        if cls._FIELD_PAGINATION in obj:
+            pagination = converter.deserialize(Pagination, obj[cls._FIELD_PAGINATION])
+
+        return BunqResponse(array_deserialized, response_raw.headers, pagination)
+
+    @classmethod
+    def _from_json_multitype_list(cls, response_raw: BunqResponseRaw,
+                                  wrappers: Dict[str, Type[BunqModel]] = None) -> BunqResponse[List[T]]:
+        from bunq import Pagination
+
+        json = response_raw.body_bytes.decode()
+        obj = converter.json_to_class(dict, json)
+        array = obj[cls._FIELD_RESPONSE]
+        array_deserialized = []
+
+        for item in array:
+            for wrapper_name, wrapper_class in wrappers.items():
+                if wrapper_name in item:
+                    item_deserialized = converter.deserialize(wrapper_class, item[wrapper_name])
+                    array_deserialized.append(item_deserialized)
 
         pagination = None
 
