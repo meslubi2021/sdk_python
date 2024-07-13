@@ -11,6 +11,7 @@ from typing import Type, Optional, Callable, Generator, Dict, Match, List, Union
 
 from bunq.sdk.exception.bunq_exception import BunqException
 from bunq.sdk.util.type_alias import T, JsonValue
+from bunq.sdk.model.core.anchor_object_interface import AnchorObjectInterface
 
 if typing.TYPE_CHECKING:
     pass
@@ -40,6 +41,7 @@ class JsonAdapter(Generic[T]):
     # Suffix to strip from the keys during serialization
     _SUFFIX_KEY_OVERLAPPING = '_'
     _PREFIX_KEY_PROTECTED = '_'
+    _PREFIX_KEY_UNKNOWN = 'unknown_'
 
     # Constants to fetch param types from the docstrings
     _TEMPLATE_PATTERN_PARAM_TYPES = ':type (_?{}):[\\s\\n\\r]+([\\w.]+)(?:\\[([\\w.]+)\\])?'
@@ -162,6 +164,8 @@ class JsonAdapter(Generic[T]):
             if value_specs is not None:
                 dict_deserialized[value_specs.name] = cls._deserialize_value(value_specs.types, dict_[key])
             else:
+                if not issubclass(cls_context, AnchorObjectInterface):
+                    dict_deserialized[cls._PREFIX_KEY_UNKNOWN + key] = dict_[key]
                 cls._warn_key_unknown(cls_context, key)
 
         return dict_deserialized

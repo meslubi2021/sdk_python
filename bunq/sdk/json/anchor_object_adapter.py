@@ -3,6 +3,7 @@ from __future__ import annotations
 from bunq import AnchorObjectInterface
 from bunq.sdk.exception.bunq_exception import BunqException
 from bunq.sdk.json import converter
+from bunq.sdk.json.converter import JsonAdapter
 from bunq.sdk.model.core.bunq_model import BunqModel
 from bunq.sdk.model.generated import endpoint
 from bunq.sdk.model.generated import object_
@@ -29,9 +30,9 @@ class AnchorObjectAdapter(converter.JsonAdapter):
         model_ = super()._deserialize_default(cls_target, obj_raw)
 
         if isinstance(model_, AnchorObjectInterface) and model_.is_all_field_none():
-            for field in model_.__dict__:
+            for field in obj_raw:
                 object_class = cls._get_object_class(field)
-                contents = super()._deserialize_default(object_class, obj_raw)
+                contents = super()._deserialize_default(object_class, obj_raw[field])
 
                 if contents.is_all_field_none():
                     setattr(model_, field, None)
@@ -46,6 +47,7 @@ class AnchorObjectAdapter(converter.JsonAdapter):
 
     @classmethod
     def _get_object_class(cls, class_name: str) -> BunqModel:
+        class_name = class_name.lstrip(JsonAdapter._PREFIX_KEY_UNKNOWN)
         class_name = class_name.lstrip(cls.__STRING_FORMAT_UNDERSCORE)
 
         if class_name in cls._override_field_map:
