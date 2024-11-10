@@ -190,6 +190,13 @@ class JsonAdapter(Generic[T]):
     def _fetch_attribute_specs_from_doc(cls,
                                         cls_in: Type[T],
                                         attribute_name: str) -> Optional[ValueSpecs]:
+        if not hasattr(cls_in, 'value_specs'):
+            from collections import defaultdict
+            setattr(cls_in, 'value_specs', defaultdict(lambda: dict()))
+
+        if attribute_name in cls_in.value_specs:
+            return cls_in.value_specs[attribute_name]
+
         pattern = cls._TEMPLATE_PATTERN_PARAM_TYPES.format(attribute_name)
         doc_type = cls_in.__doc__
 
@@ -199,7 +206,7 @@ class JsonAdapter(Generic[T]):
         match = re.search(pattern, doc_type)
 
         if match is not None:
-            return ValueSpecs(
+            value_spec = ValueSpecs(
                 cls._fetch_name(match),
                 ValueTypes(
                     cls._fetch_type_main(cls_in, match),
@@ -207,7 +214,11 @@ class JsonAdapter(Generic[T]):
                 )
             )
         else:
-            return None
+            value_spec = None
+
+        cls_in.value_specs[attribute_name] = value_spec
+
+        return value_spec
 
     @classmethod
     def _fetch_name(cls, match: Match) -> str:
