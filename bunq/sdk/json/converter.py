@@ -11,6 +11,7 @@ from typing import Type, Optional, Callable, Generator, Dict, Match, List, Union
 
 from bunq.sdk.exception.bunq_exception import BunqException
 from bunq.sdk.util.type_alias import T, JsonValue
+from bunq.sdk.model.core.anchor_object_interface import AnchorObjectInterface
 
 if typing.TYPE_CHECKING:
     pass
@@ -40,6 +41,7 @@ class JsonAdapter(Generic[T]):
     # Suffix to strip from the keys during serialization
     _SUFFIX_KEY_OVERLAPPING = '_'
     _PREFIX_KEY_PROTECTED = '_'
+    _PREFIX_KEY_UNKNOWN = 'unknown_'
 
     # Constants to fetch param types from the docstrings
     _TEMPLATE_PATTERN_PARAM_TYPES = ':type (_?{}):[\\s\\n\\r]+([\\w.]+)(?:\\[([\\w.]+)\\])?'
@@ -162,6 +164,8 @@ class JsonAdapter(Generic[T]):
             if value_specs is not None:
                 dict_deserialized[value_specs.name] = cls._deserialize_value(value_specs.types, dict_[key])
             else:
+                if not issubclass(cls_context, AnchorObjectInterface):
+                    dict_deserialized[cls._PREFIX_KEY_UNKNOWN + key] = dict_[key]
                 cls._warn_key_unknown(cls_context, key)
 
         return dict_deserialized
@@ -186,6 +190,13 @@ class JsonAdapter(Generic[T]):
     def _fetch_attribute_specs_from_doc(cls,
                                         cls_in: Type[T],
                                         attribute_name: str) -> Optional[ValueSpecs]:
+        if not hasattr(cls_in, 'value_specs'):
+            from collections import defaultdict
+            setattr(cls_in, 'value_specs', defaultdict(lambda: dict()))
+
+        if attribute_name in cls_in.value_specs:
+            return cls_in.value_specs[attribute_name]
+
         pattern = cls._TEMPLATE_PATTERN_PARAM_TYPES.format(attribute_name)
         doc_type = cls_in.__doc__
 
@@ -195,7 +206,7 @@ class JsonAdapter(Generic[T]):
         match = re.search(pattern, doc_type)
 
         if match is not None:
-            return ValueSpecs(
+            value_spec = ValueSpecs(
                 cls._fetch_name(match),
                 ValueTypes(
                     cls._fetch_type_main(cls_in, match),
@@ -203,7 +214,11 @@ class JsonAdapter(Generic[T]):
                 )
             )
         else:
-            return None
+            value_spec = None
+
+        cls_in.value_specs[attribute_name] = value_spec
+
+        return value_spec
 
     @classmethod
     def _fetch_name(cls, match: Match) -> str:

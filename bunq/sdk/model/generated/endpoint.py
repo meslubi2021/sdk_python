@@ -5887,7 +5887,7 @@ cls.FIELD_CANCELLATION_REASON : cancellation_reason
         response_raw = api_client.get(endpoint_url, params, custom_headers)
 
         return BunqResponseCardList.cast_from_bunq_response(
-            cls._from_json_list(response_raw, cls._OBJECT_TYPE_GET)
+            cls._from_json_multitype_list(response_raw, {'CardCredit': CardCredit, 'CardDebit': CardDebit})
         )
 
     @property
@@ -43577,7 +43577,7 @@ class MasterCardPayment(BunqModel):
         response_raw = api_client.get(endpoint_url, params, custom_headers)
 
         return BunqResponseMasterCardPaymentList.cast_from_bunq_response(
-            cls._from_json_list(response_raw, cls._OBJECT_TYPE_GET)
+            Payment._from_json_list(response_raw, cls._OBJECT_TYPE_GET)
         )
 
 
