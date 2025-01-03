@@ -12,8 +12,10 @@ class FloatAdapter(converter.JsonAdapter):
                     target_class: Type[float],
                     string: str) -> float:
         _ = target_class
-
-        return float(string)
+        if string is None:
+            return 0
+        else:
+            return float(string)
 
     @classmethod
     def serialize(cls, number: float) -> str:
