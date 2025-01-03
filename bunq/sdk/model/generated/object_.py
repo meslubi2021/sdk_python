@@ -1297,6 +1297,57 @@ class AttachmentUrl(BunqModel):
         return converter.json_to_class(AttachmentUrl, json_str)
 
 
+class PaymentArrivalExpected(BunqModel):
+    """
+    :param _status: Indicates when we expect the payment to arrive.
+    :type _status: str
+    :param _time: The time when the payment is expected to arrive.
+    :type _time: str
+    """
+
+    _status = None
+    _time = None
+
+    @property
+    def status(self):
+        """
+        :rtype: str
+        """
+
+        return self._status
+
+    @property
+    def time(self):
+        """
+        :rtype: str
+        """
+
+        return self._time
+
+    def is_all_field_none(self):
+        """
+        :rtype: bool
+        """
+
+        if self._status is not None:
+            return False
+
+        if self._time is not None:
+            return False
+
+        return True
+
+    @staticmethod
+    def from_json(json_str):
+        """
+        :type json_str: str
+        
+        :rtype: PaymentArrivalExpected
+        """
+
+        return converter.json_to_class(PaymentArrivalExpected, json_str)
+
+
 class AttachmentMonetaryAccountPayment(BunqModel):
     """
     :param _id_: The id of the attached Attachment.
@@ -1456,95 +1507,6 @@ class Geolocation(BunqModel):
         """
 
         return converter.json_to_class(Geolocation, json_str)
-
-
-class Error(BunqModel):
-    """
-    :param _error_description: The error description (in English).
-    :type _error_description: str
-    :param _error_description_translated: The error description (in the user
-    language).
-    :type _error_description_translated: str
-    """
-
-    _error_description = None
-    _error_description_translated = None
-
-    @property
-    def error_description(self):
-        """
-        :rtype: str
-        """
-
-        return self._error_description
-
-    @property
-    def error_description_translated(self):
-        """
-        :rtype: str
-        """
-
-        return self._error_description_translated
-
-    def is_all_field_none(self):
-        """
-        :rtype: bool
-        """
-
-        if self._error_description is not None:
-            return False
-
-        if self._error_description_translated is not None:
-            return False
-
-        return True
-
-    @staticmethod
-    def from_json(json_str):
-        """
-        :type json_str: str
-        
-        :rtype: Error
-        """
-
-        return converter.json_to_class(Error, json_str)
-
-
-class PaymentBatchAnchoredPayment(BunqModel):
-    """
-    :param _Payment: 
-    :type _Payment: list[endpoint.Payment]
-    """
-
-    _Payment = None
-
-    @property
-    def Payment(self):
-        """
-        :rtype: list[endpoint.Payment]
-        """
-
-        return self._Payment
-
-    def is_all_field_none(self):
-        """
-        :rtype: bool
-        """
-
-        if self._Payment is not None:
-            return False
-
-        return True
-
-    @staticmethod
-    def from_json(json_str):
-        """
-        :type json_str: str
-        
-        :rtype: PaymentBatchAnchoredPayment
-        """
-
-        return converter.json_to_class(PaymentBatchAnchoredPayment, json_str)
 
 
 class AttachmentPublic(BunqModel):
@@ -1770,17 +1732,21 @@ class CardPinAssignment(BunqModel):
     """
     :param _type_: PIN type. Can be PRIMARY, SECONDARY or TERTIARY
     :type _type_: str
-    :param _routing_type: Routing type. Can be MANUAL or AUTOMATIC
+    :param _routing_type: Routing type.
     :type _routing_type: str
     :param _pin_code: The 4 digit PIN to be assigned to this account.
     :type _pin_code: str
     :param _monetary_account_id: The ID of the monetary account to assign to
     this pin for the card.
     :type _monetary_account_id: int
+    :param _status: The status of the card pin assignment.
+    :type _status: str
     """
 
     _type_ = None
     _monetary_account_id = None
+    _status = None
+    _routing_type = None
     _type__field_for_request = None
     _routing_type_field_for_request = None
     _pin_code_field_for_request = None
@@ -1820,6 +1786,22 @@ class CardPinAssignment(BunqModel):
 
         return self._monetary_account_id
 
+    @property
+    def status(self):
+        """
+        :rtype: str
+        """
+
+        return self._status
+
+    @property
+    def routing_type(self):
+        """
+        :rtype: str
+        """
+
+        return self._routing_type
+
     def is_all_field_none(self):
         """
         :rtype: bool
@@ -1829,6 +1811,12 @@ class CardPinAssignment(BunqModel):
             return False
 
         if self._monetary_account_id is not None:
+            return False
+
+        if self._status is not None:
+            return False
+
+        if self._routing_type is not None:
             return False
 
         return True
@@ -1995,521 +1983,6 @@ class CardCountryPermission(BunqModel):
         """
 
         return converter.json_to_class(CardCountryPermission, json_str)
-
-
-class MonetaryAccountProfileFill(BunqModel):
-    """
-    :param _status: The status of the profile.
-    :type _status: str
-    :param _balance_preferred: The goal balance.
-    :type _balance_preferred: Amount
-    :param _balance_threshold_low: The low threshold balance.
-    :type _balance_threshold_low: Amount
-    :param _issuer: The bank the fill is supposed to happen from, with BIC and
-    bank name.
-    :type _issuer: Issuer
-    """
-
-    _status = None
-    _balance_preferred = None
-    _balance_threshold_low = None
-    _issuer = None
-    _status_field_for_request = None
-    _balance_preferred_field_for_request = None
-    _balance_threshold_low_field_for_request = None
-    _issuer_field_for_request = None
-
-    def __init__(self, status, balance_preferred, balance_threshold_low, issuer=None):
-        """
-        :param status: The status of the profile.
-        :type status: str
-        :param balance_preferred: The goal balance.
-        :type balance_preferred: Amount
-        :param balance_threshold_low: The low threshold balance.
-        :type balance_threshold_low: Amount
-        :param issuer: The bank the fill is supposed to happen from, with BIC and
-        bank name.
-        :type issuer: Issuer
-        """
-
-        self._status_field_for_request = status
-        self._balance_preferred_field_for_request = balance_preferred
-        self._balance_threshold_low_field_for_request = balance_threshold_low
-        self._issuer_field_for_request = issuer
-
-    @property
-    def status(self):
-        """
-        :rtype: str
-        """
-
-        return self._status
-
-    @property
-    def balance_preferred(self):
-        """
-        :rtype: Amount
-        """
-
-        return self._balance_preferred
-
-    @property
-    def balance_threshold_low(self):
-        """
-        :rtype: Amount
-        """
-
-        return self._balance_threshold_low
-
-    @property
-    def issuer(self):
-        """
-        :rtype: Issuer
-        """
-
-        return self._issuer
-
-    def is_all_field_none(self):
-        """
-        :rtype: bool
-        """
-
-        if self._status is not None:
-            return False
-
-        if self._balance_preferred is not None:
-            return False
-
-        if self._balance_threshold_low is not None:
-            return False
-
-        if self._issuer is not None:
-            return False
-
-        return True
-
-    @staticmethod
-    def from_json(json_str):
-        """
-        :type json_str: str
-        
-        :rtype: MonetaryAccountProfileFill
-        """
-
-        return converter.json_to_class(MonetaryAccountProfileFill, json_str)
-
-
-class Issuer(BunqModel):
-    """
-    :param _bic: The BIC code.
-    :type _bic: str
-    :param _name: The name of the bank.
-    :type _name: str
-    """
-
-    _bic = None
-    _name = None
-    _bic_field_for_request = None
-    _name_field_for_request = None
-
-    def __init__(self, bic, name=None):
-        """
-        :param bic: The BIC code.
-        :type bic: str
-        :param name: The name of the bank.
-        :type name: str
-        """
-
-        self._bic_field_for_request = bic
-        self._name_field_for_request = name
-
-    @property
-    def bic(self):
-        """
-        :rtype: str
-        """
-
-        return self._bic
-
-    @property
-    def name(self):
-        """
-        :rtype: str
-        """
-
-        return self._name
-
-    def is_all_field_none(self):
-        """
-        :rtype: bool
-        """
-
-        if self._bic is not None:
-            return False
-
-        if self._name is not None:
-            return False
-
-        return True
-
-    @staticmethod
-    def from_json(json_str):
-        """
-        :type json_str: str
-        
-        :rtype: Issuer
-        """
-
-        return converter.json_to_class(Issuer, json_str)
-
-
-class MonetaryAccountProfileDrain(BunqModel):
-    """
-    :param _status: The status of the profile.
-    :type _status: str
-    :param _balance_preferred: The goal balance.
-    :type _balance_preferred: Amount
-    :param _balance_threshold_high: The high threshold balance.
-    :type _balance_threshold_high: Amount
-    :param _savings_account_alias: The savings monetary account.
-    :type _savings_account_alias: MonetaryAccountReference
-    """
-
-    _status = None
-    _balance_preferred = None
-    _balance_threshold_high = None
-    _savings_account_alias = None
-    _status_field_for_request = None
-    _balance_preferred_field_for_request = None
-    _balance_threshold_high_field_for_request = None
-    _savings_account_alias_field_for_request = None
-
-    def __init__(self, status, balance_preferred, balance_threshold_high, savings_account_alias):
-        """
-        :param status: The status of the profile.
-        :type status: str
-        :param balance_preferred: The goal balance.
-        :type balance_preferred: Amount
-        :param balance_threshold_high: The high threshold balance.
-        :type balance_threshold_high: Amount
-        :param savings_account_alias: The savings monetary account.
-        :type savings_account_alias: Pointer
-        """
-
-        self._status_field_for_request = status
-        self._balance_preferred_field_for_request = balance_preferred
-        self._balance_threshold_high_field_for_request = balance_threshold_high
-        self._savings_account_alias_field_for_request = savings_account_alias
-
-    @property
-    def status(self):
-        """
-        :rtype: str
-        """
-
-        return self._status
-
-    @property
-    def balance_preferred(self):
-        """
-        :rtype: Amount
-        """
-
-        return self._balance_preferred
-
-    @property
-    def balance_threshold_high(self):
-        """
-        :rtype: Amount
-        """
-
-        return self._balance_threshold_high
-
-    @property
-    def savings_account_alias(self):
-        """
-        :rtype: MonetaryAccountReference
-        """
-
-        return self._savings_account_alias
-
-    def is_all_field_none(self):
-        """
-        :rtype: bool
-        """
-
-        if self._status is not None:
-            return False
-
-        if self._balance_preferred is not None:
-            return False
-
-        if self._balance_threshold_high is not None:
-            return False
-
-        if self._savings_account_alias is not None:
-            return False
-
-        return True
-
-    @staticmethod
-    def from_json(json_str):
-        """
-        :type json_str: str
-        
-        :rtype: MonetaryAccountProfileDrain
-        """
-
-        return converter.json_to_class(MonetaryAccountProfileDrain, json_str)
-
-
-class MonetaryAccountSetting(BunqModel):
-    """
-    :param _color: The color chosen for the MonetaryAccount.
-    :type _color: str
-    :param _icon: The icon chosen for the MonetaryAccount.
-    :type _icon: str
-    :param _default_avatar_status: The status of the avatar. Can be either
-    AVATAR_DEFAULT, AVATAR_CUSTOM or AVATAR_UNDETERMINED.
-    :type _default_avatar_status: str
-    :param _restriction_chat: The chat restriction. Possible values are
-    ALLOW_INCOMING or BLOCK_INCOMING
-    :type _restriction_chat: str
-    :param _sdd_expiration_action: The preference for this monetary account on
-    whether to automatically accept or reject expiring SDDs.
-    :type _sdd_expiration_action: str
-    """
-
-    _color = None
-    _icon = None
-    _default_avatar_status = None
-    _restriction_chat = None
-    _sdd_expiration_action = None
-    _color_field_for_request = None
-    _icon_field_for_request = None
-    _default_avatar_status_field_for_request = None
-    _restriction_chat_field_for_request = None
-    _sdd_expiration_action_field_for_request = None
-
-    def __init__(self, color=None, icon=None, default_avatar_status=None, restriction_chat=None, sdd_expiration_action=None):
-        """
-        :param color: The color chosen for the MonetaryAccount in hexadecimal
-        format.
-        :type color: str
-        :param icon: The icon chosen for the MonetaryAccount.
-        :type icon: str
-        :param default_avatar_status: The status of the avatar. Cannot be updated
-        directly.
-        :type default_avatar_status: str
-        :param restriction_chat: The chat restriction. Possible values are
-        ALLOW_INCOMING or BLOCK_INCOMING
-        :type restriction_chat: str
-        :param sdd_expiration_action: The preference for this monetary account on
-        whether to automatically accept or reject expiring SDDs.
-        :type sdd_expiration_action: str
-        """
-
-        self._color_field_for_request = color
-        self._icon_field_for_request = icon
-        self._default_avatar_status_field_for_request = default_avatar_status
-        self._restriction_chat_field_for_request = restriction_chat
-        self._sdd_expiration_action_field_for_request = sdd_expiration_action
-
-    @property
-    def color(self):
-        """
-        :rtype: str
-        """
-
-        return self._color
-
-    @property
-    def icon(self):
-        """
-        :rtype: str
-        """
-
-        return self._icon
-
-    @property
-    def default_avatar_status(self):
-        """
-        :rtype: str
-        """
-
-        return self._default_avatar_status
-
-    @property
-    def restriction_chat(self):
-        """
-        :rtype: str
-        """
-
-        return self._restriction_chat
-
-    @property
-    def sdd_expiration_action(self):
-        """
-        :rtype: str
-        """
-
-        return self._sdd_expiration_action
-
-    def is_all_field_none(self):
-        """
-        :rtype: bool
-        """
-
-        if self._color is not None:
-            return False
-
-        if self._icon is not None:
-            return False
-
-        if self._default_avatar_status is not None:
-            return False
-
-        if self._restriction_chat is not None:
-            return False
-
-        if self._sdd_expiration_action is not None:
-            return False
-
-        return True
-
-    @staticmethod
-    def from_json(json_str):
-        """
-        :type json_str: str
-        
-        :rtype: MonetaryAccountSetting
-        """
-
-        return converter.json_to_class(MonetaryAccountSetting, json_str)
-
-
-class CoOwner(BunqModel):
-    """
-    :param _alias: The Alias of the co-owner.
-    :type _alias: LabelUser
-    :param _status: Can be: ACCEPTED, REJECTED, PENDING or REVOKED
-    :type _status: str
-    """
-
-    _alias = None
-    _status = None
-    _alias_field_for_request = None
-
-    def __init__(self, alias):
-        """
-        :param alias: The users the account will be joint with.
-        :type alias: Pointer
-        """
-
-        self._alias_field_for_request = alias
-
-    @property
-    def alias(self):
-        """
-        :rtype: LabelUser
-        """
-
-        return self._alias
-
-    @property
-    def status(self):
-        """
-        :rtype: str
-        """
-
-        return self._status
-
-    def is_all_field_none(self):
-        """
-        :rtype: bool
-        """
-
-        if self._alias is not None:
-            return False
-
-        if self._status is not None:
-            return False
-
-        return True
-
-    @staticmethod
-    def from_json(json_str):
-        """
-        :type json_str: str
-        
-        :rtype: CoOwner
-        """
-
-        return converter.json_to_class(CoOwner, json_str)
-
-
-class BirdeeInvestmentPortfolioGoal(BunqModel):
-    """
-    :param _amount_target: The investment goal amount.
-    :type _amount_target: Amount
-    :param _time_end: The investment goal end time.
-    :type _time_end: str
-    """
-
-    _amount_target = None
-    _time_end = None
-    _amount_target_field_for_request = None
-    _time_end_field_for_request = None
-
-    def __init__(self, amount_target=None, time_end=None):
-        """
-        :param amount_target: The investment goal amount.
-        :type amount_target: Amount
-        :param time_end: The investment goal end time.
-        :type time_end: str
-        """
-
-        self._amount_target_field_for_request = amount_target
-        self._time_end_field_for_request = time_end
-
-    @property
-    def amount_target(self):
-        """
-        :rtype: Amount
-        """
-
-        return self._amount_target
-
-    @property
-    def time_end(self):
-        """
-        :rtype: str
-        """
-
-        return self._time_end
-
-    def is_all_field_none(self):
-        """
-        :rtype: bool
-        """
-
-        if self._amount_target is not None:
-            return False
-
-        if self._time_end is not None:
-            return False
-
-        return True
-
-    @staticmethod
-    def from_json(json_str):
-        """
-        :type json_str: str
-        
-        :rtype: BirdeeInvestmentPortfolioGoal
-        """
-
-        return converter.json_to_class(BirdeeInvestmentPortfolioGoal, json_str)
 
 
 class Certificate(BunqModel):
@@ -2753,8 +2226,11 @@ class TaxResident(BunqModel):
     :param _status: The status of the tax number. Either CONFIRMED or
     UNCONFIRMED.
     :type _status: str
+    :param _id_: The id of the tax resident.
+    :type _id_: int
     """
 
+    _id_ = None
     _country = None
     _tax_number = None
     _status = None
@@ -2776,6 +2252,14 @@ class TaxResident(BunqModel):
         self._country_field_for_request = country
         self._tax_number_field_for_request = tax_number
         self._status_field_for_request = status
+
+    @property
+    def id_(self):
+        """
+        :rtype: int
+        """
+
+        return self._id_
 
     @property
     def country(self):
@@ -2805,6 +2289,9 @@ class TaxResident(BunqModel):
         """
         :rtype: bool
         """
+
+        if self._id_ is not None:
+            return False
 
         if self._country is not None:
             return False
@@ -3280,6 +2767,43 @@ class DraftPaymentAnchorObject(BunqModel, AnchorObjectInterface):
         return converter.json_to_class(DraftPaymentAnchorObject, json_str)
 
 
+class PaymentBatchAnchoredPayment(BunqModel):
+    """
+    :param _Payment: 
+    :type _Payment: list[endpoint.Payment]
+    """
+
+    _Payment = None
+
+    @property
+    def Payment(self):
+        """
+        :rtype: list[endpoint.Payment]
+        """
+
+        return self._Payment
+
+    def is_all_field_none(self):
+        """
+        :rtype: bool
+        """
+
+        if self._Payment is not None:
+            return False
+
+        return True
+
+    @staticmethod
+    def from_json(json_str):
+        """
+        :type json_str: str
+        
+        :rtype: PaymentBatchAnchoredPayment
+        """
+
+        return converter.json_to_class(PaymentBatchAnchoredPayment, json_str)
+
+
 class ScheduleAnchorObject(BunqModel, AnchorObjectInterface):
     """
     :param _Payment: 
@@ -3389,10 +2913,6 @@ class EventObject(BunqModel, AnchorObjectInterface):
     :type _RequestInquiry: endpoint.RequestInquiry
     :param _RequestResponse: 
     :type _RequestResponse: endpoint.RequestResponse
-    :param _RewardRecipient: 
-    :type _RewardRecipient: endpoint.RewardRecipient
-    :param _RewardSender: 
-    :type _RewardSender: endpoint.RewardSender
     :param _ShareInviteBankInquiry: 
     :type _ShareInviteBankInquiry: endpoint.ShareInviteMonetaryAccountInquiry
     :param _ShareInviteBankResponse: 
@@ -3426,8 +2946,6 @@ class EventObject(BunqModel, AnchorObjectInterface):
     _RequestInquiryBatch = None
     _RequestInquiry = None
     _RequestResponse = None
-    _RewardRecipient = None
-    _RewardSender = None
     _ShareInviteBankInquiry = None
     _ShareInviteBankResponse = None
     _SofortMerchantTransaction = None
@@ -3586,22 +3104,6 @@ class EventObject(BunqModel, AnchorObjectInterface):
         return self._RequestResponse
 
     @property
-    def RewardRecipient(self):
-        """
-        :rtype: endpoint.RewardRecipient
-        """
-
-        return self._RewardRecipient
-
-    @property
-    def RewardSender(self):
-        """
-        :rtype: endpoint.RewardSender
-        """
-
-        return self._RewardSender
-
-    @property
     def ShareInviteBankInquiry(self):
         """
         :rtype: endpoint.ShareInviteMonetaryAccountInquiry
@@ -3695,12 +3197,6 @@ class EventObject(BunqModel, AnchorObjectInterface):
         if self._RequestResponse is not None:
             return self._RequestResponse
 
-        if self._RewardRecipient is not None:
-            return self._RewardRecipient
-
-        if self._RewardSender is not None:
-            return self._RewardSender
-
         if self._ShareInviteBankInquiry is not None:
             return self._ShareInviteBankInquiry
 
@@ -3775,12 +3271,6 @@ class EventObject(BunqModel, AnchorObjectInterface):
             return False
 
         if self._RequestResponse is not None:
-            return False
-
-        if self._RewardRecipient is not None:
-            return False
-
-        if self._RewardSender is not None:
             return False
 
         if self._ShareInviteBankInquiry is not None:
@@ -3957,6 +3447,58 @@ class SchedulePaymentEntry(BunqModel):
         """
 
         return converter.json_to_class(SchedulePaymentEntry, json_str)
+
+
+class Error(BunqModel):
+    """
+    :param _error_description: The error description (in English).
+    :type _error_description: str
+    :param _error_description_translated: The error description (in the user
+    language).
+    :type _error_description_translated: str
+    """
+
+    _error_description = None
+    _error_description_translated = None
+
+    @property
+    def error_description(self):
+        """
+        :rtype: str
+        """
+
+        return self._error_description
+
+    @property
+    def error_description_translated(self):
+        """
+        :rtype: str
+        """
+
+        return self._error_description_translated
+
+    def is_all_field_none(self):
+        """
+        :rtype: bool
+        """
+
+        if self._error_description is not None:
+            return False
+
+        if self._error_description_translated is not None:
+            return False
+
+        return True
+
+    @staticmethod
+    def from_json(json_str):
+        """
+        :type json_str: str
+        
+        :rtype: Error
+        """
+
+        return converter.json_to_class(Error, json_str)
 
 
 class ScheduleInstanceAnchorObject(BunqModel, AnchorObjectInterface):
@@ -4991,6 +4533,521 @@ class ShareDetailDraftPayment(BunqModel):
         """
 
         return converter.json_to_class(ShareDetailDraftPayment, json_str)
+
+
+class MonetaryAccountProfileFill(BunqModel):
+    """
+    :param _status: The status of the profile.
+    :type _status: str
+    :param _balance_preferred: The goal balance.
+    :type _balance_preferred: Amount
+    :param _balance_threshold_low: The low threshold balance.
+    :type _balance_threshold_low: Amount
+    :param _issuer: The bank the fill is supposed to happen from, with BIC and
+    bank name.
+    :type _issuer: Issuer
+    """
+
+    _status = None
+    _balance_preferred = None
+    _balance_threshold_low = None
+    _issuer = None
+    _status_field_for_request = None
+    _balance_preferred_field_for_request = None
+    _balance_threshold_low_field_for_request = None
+    _issuer_field_for_request = None
+
+    def __init__(self, status, balance_preferred, balance_threshold_low, issuer=None):
+        """
+        :param status: The status of the profile.
+        :type status: str
+        :param balance_preferred: The goal balance.
+        :type balance_preferred: Amount
+        :param balance_threshold_low: The low threshold balance.
+        :type balance_threshold_low: Amount
+        :param issuer: The bank the fill is supposed to happen from, with BIC and
+        bank name.
+        :type issuer: Issuer
+        """
+
+        self._status_field_for_request = status
+        self._balance_preferred_field_for_request = balance_preferred
+        self._balance_threshold_low_field_for_request = balance_threshold_low
+        self._issuer_field_for_request = issuer
+
+    @property
+    def status(self):
+        """
+        :rtype: str
+        """
+
+        return self._status
+
+    @property
+    def balance_preferred(self):
+        """
+        :rtype: Amount
+        """
+
+        return self._balance_preferred
+
+    @property
+    def balance_threshold_low(self):
+        """
+        :rtype: Amount
+        """
+
+        return self._balance_threshold_low
+
+    @property
+    def issuer(self):
+        """
+        :rtype: Issuer
+        """
+
+        return self._issuer
+
+    def is_all_field_none(self):
+        """
+        :rtype: bool
+        """
+
+        if self._status is not None:
+            return False
+
+        if self._balance_preferred is not None:
+            return False
+
+        if self._balance_threshold_low is not None:
+            return False
+
+        if self._issuer is not None:
+            return False
+
+        return True
+
+    @staticmethod
+    def from_json(json_str):
+        """
+        :type json_str: str
+        
+        :rtype: MonetaryAccountProfileFill
+        """
+
+        return converter.json_to_class(MonetaryAccountProfileFill, json_str)
+
+
+class Issuer(BunqModel):
+    """
+    :param _bic: The BIC code.
+    :type _bic: str
+    :param _name: The name of the bank.
+    :type _name: str
+    """
+
+    _bic = None
+    _name = None
+    _bic_field_for_request = None
+    _name_field_for_request = None
+
+    def __init__(self, bic, name=None):
+        """
+        :param bic: The BIC code.
+        :type bic: str
+        :param name: The name of the bank.
+        :type name: str
+        """
+
+        self._bic_field_for_request = bic
+        self._name_field_for_request = name
+
+    @property
+    def bic(self):
+        """
+        :rtype: str
+        """
+
+        return self._bic
+
+    @property
+    def name(self):
+        """
+        :rtype: str
+        """
+
+        return self._name
+
+    def is_all_field_none(self):
+        """
+        :rtype: bool
+        """
+
+        if self._bic is not None:
+            return False
+
+        if self._name is not None:
+            return False
+
+        return True
+
+    @staticmethod
+    def from_json(json_str):
+        """
+        :type json_str: str
+        
+        :rtype: Issuer
+        """
+
+        return converter.json_to_class(Issuer, json_str)
+
+
+class MonetaryAccountProfileDrain(BunqModel):
+    """
+    :param _status: The status of the profile.
+    :type _status: str
+    :param _balance_preferred: The goal balance.
+    :type _balance_preferred: Amount
+    :param _balance_threshold_high: The high threshold balance.
+    :type _balance_threshold_high: Amount
+    :param _savings_account_alias: The savings monetary account.
+    :type _savings_account_alias: MonetaryAccountReference
+    """
+
+    _status = None
+    _balance_preferred = None
+    _balance_threshold_high = None
+    _savings_account_alias = None
+    _status_field_for_request = None
+    _balance_preferred_field_for_request = None
+    _balance_threshold_high_field_for_request = None
+    _savings_account_alias_field_for_request = None
+
+    def __init__(self, status, balance_preferred, balance_threshold_high, savings_account_alias):
+        """
+        :param status: The status of the profile.
+        :type status: str
+        :param balance_preferred: The goal balance.
+        :type balance_preferred: Amount
+        :param balance_threshold_high: The high threshold balance.
+        :type balance_threshold_high: Amount
+        :param savings_account_alias: The savings monetary account.
+        :type savings_account_alias: Pointer
+        """
+
+        self._status_field_for_request = status
+        self._balance_preferred_field_for_request = balance_preferred
+        self._balance_threshold_high_field_for_request = balance_threshold_high
+        self._savings_account_alias_field_for_request = savings_account_alias
+
+    @property
+    def status(self):
+        """
+        :rtype: str
+        """
+
+        return self._status
+
+    @property
+    def balance_preferred(self):
+        """
+        :rtype: Amount
+        """
+
+        return self._balance_preferred
+
+    @property
+    def balance_threshold_high(self):
+        """
+        :rtype: Amount
+        """
+
+        return self._balance_threshold_high
+
+    @property
+    def savings_account_alias(self):
+        """
+        :rtype: MonetaryAccountReference
+        """
+
+        return self._savings_account_alias
+
+    def is_all_field_none(self):
+        """
+        :rtype: bool
+        """
+
+        if self._status is not None:
+            return False
+
+        if self._balance_preferred is not None:
+            return False
+
+        if self._balance_threshold_high is not None:
+            return False
+
+        if self._savings_account_alias is not None:
+            return False
+
+        return True
+
+    @staticmethod
+    def from_json(json_str):
+        """
+        :type json_str: str
+        
+        :rtype: MonetaryAccountProfileDrain
+        """
+
+        return converter.json_to_class(MonetaryAccountProfileDrain, json_str)
+
+
+class MonetaryAccountSetting(BunqModel):
+    """
+    :param _color: The color chosen for the MonetaryAccount.
+    :type _color: str
+    :param _icon: The icon chosen for the MonetaryAccount.
+    :type _icon: str
+    :param _default_avatar_status: The status of the avatar. Can be either
+    AVATAR_DEFAULT, AVATAR_CUSTOM or AVATAR_UNDETERMINED.
+    :type _default_avatar_status: str
+    :param _restriction_chat: The chat restriction. Possible values are
+    ALLOW_INCOMING or BLOCK_INCOMING
+    :type _restriction_chat: str
+    :param _sdd_expiration_action: The preference for this monetary account on
+    whether to automatically accept or reject expiring SDDs.
+    :type _sdd_expiration_action: str
+    """
+
+    _color = None
+    _icon = None
+    _default_avatar_status = None
+    _restriction_chat = None
+    _sdd_expiration_action = None
+    _color_field_for_request = None
+    _icon_field_for_request = None
+    _default_avatar_status_field_for_request = None
+    _restriction_chat_field_for_request = None
+    _sdd_expiration_action_field_for_request = None
+
+    def __init__(self, color=None, icon=None, default_avatar_status=None, restriction_chat=None, sdd_expiration_action=None):
+        """
+        :param color: The color chosen for the MonetaryAccount in hexadecimal
+        format.
+        :type color: str
+        :param icon: The icon chosen for the MonetaryAccount.
+        :type icon: str
+        :param default_avatar_status: The status of the avatar. Cannot be updated
+        directly.
+        :type default_avatar_status: str
+        :param restriction_chat: The chat restriction. Possible values are
+        ALLOW_INCOMING or BLOCK_INCOMING
+        :type restriction_chat: str
+        :param sdd_expiration_action: The preference for this monetary account on
+        whether to automatically accept or reject expiring SDDs.
+        :type sdd_expiration_action: str
+        """
+
+        self._color_field_for_request = color
+        self._icon_field_for_request = icon
+        self._default_avatar_status_field_for_request = default_avatar_status
+        self._restriction_chat_field_for_request = restriction_chat
+        self._sdd_expiration_action_field_for_request = sdd_expiration_action
+
+    @property
+    def color(self):
+        """
+        :rtype: str
+        """
+
+        return self._color
+
+    @property
+    def icon(self):
+        """
+        :rtype: str
+        """
+
+        return self._icon
+
+    @property
+    def default_avatar_status(self):
+        """
+        :rtype: str
+        """
+
+        return self._default_avatar_status
+
+    @property
+    def restriction_chat(self):
+        """
+        :rtype: str
+        """
+
+        return self._restriction_chat
+
+    @property
+    def sdd_expiration_action(self):
+        """
+        :rtype: str
+        """
+
+        return self._sdd_expiration_action
+
+    def is_all_field_none(self):
+        """
+        :rtype: bool
+        """
+
+        if self._color is not None:
+            return False
+
+        if self._icon is not None:
+            return False
+
+        if self._default_avatar_status is not None:
+            return False
+
+        if self._restriction_chat is not None:
+            return False
+
+        if self._sdd_expiration_action is not None:
+            return False
+
+        return True
+
+    @staticmethod
+    def from_json(json_str):
+        """
+        :type json_str: str
+        
+        :rtype: MonetaryAccountSetting
+        """
+
+        return converter.json_to_class(MonetaryAccountSetting, json_str)
+
+
+class CoOwner(BunqModel):
+    """
+    :param _alias: The Alias of the co-owner.
+    :type _alias: LabelUser
+    :param _status: Can be: ACCEPTED, REJECTED, PENDING or REVOKED
+    :type _status: str
+    """
+
+    _alias = None
+    _status = None
+    _alias_field_for_request = None
+
+    def __init__(self, alias):
+        """
+        :param alias: The users the account will be joint with.
+        :type alias: Pointer
+        """
+
+        self._alias_field_for_request = alias
+
+    @property
+    def alias(self):
+        """
+        :rtype: LabelUser
+        """
+
+        return self._alias
+
+    @property
+    def status(self):
+        """
+        :rtype: str
+        """
+
+        return self._status
+
+    def is_all_field_none(self):
+        """
+        :rtype: bool
+        """
+
+        if self._alias is not None:
+            return False
+
+        if self._status is not None:
+            return False
+
+        return True
+
+    @staticmethod
+    def from_json(json_str):
+        """
+        :type json_str: str
+        
+        :rtype: CoOwner
+        """
+
+        return converter.json_to_class(CoOwner, json_str)
+
+
+class BirdeeInvestmentPortfolioGoal(BunqModel):
+    """
+    :param _amount_target: The investment goal amount.
+    :type _amount_target: Amount
+    :param _time_end: The investment goal end time.
+    :type _time_end: str
+    """
+
+    _amount_target = None
+    _time_end = None
+    _amount_target_field_for_request = None
+    _time_end_field_for_request = None
+
+    def __init__(self, amount_target=None, time_end=None):
+        """
+        :param amount_target: The investment goal amount.
+        :type amount_target: Amount
+        :param time_end: The investment goal end time.
+        :type time_end: str
+        """
+
+        self._amount_target_field_for_request = amount_target
+        self._time_end_field_for_request = time_end
+
+    @property
+    def amount_target(self):
+        """
+        :rtype: Amount
+        """
+
+        return self._amount_target
+
+    @property
+    def time_end(self):
+        """
+        :rtype: str
+        """
+
+        return self._time_end
+
+    def is_all_field_none(self):
+        """
+        :rtype: bool
+        """
+
+        if self._amount_target is not None:
+            return False
+
+        if self._time_end is not None:
+            return False
+
+        return True
+
+    @staticmethod
+    def from_json(json_str):
+        """
+        :type json_str: str
+        
+        :rtype: BirdeeInvestmentPortfolioGoal
+        """
+
+        return converter.json_to_class(BirdeeInvestmentPortfolioGoal, json_str)
 
 
 class NotificationFilterEmail(BunqModel):
@@ -6430,225 +6487,6 @@ class TransferwiseRequirementFieldGroupValuesAllowed(BunqModel):
         """
 
         return converter.json_to_class(TransferwiseRequirementFieldGroupValuesAllowed, json_str)
-
-
-class RegistryMembershipSetting(BunqModel):
-    """
-    :param _auto_add_card_transaction: The setting for for adding automatically
-    card transactions to the registry.
-    :type _auto_add_card_transaction: str
-    :param _time_auto_add_card_transaction_start: The time when auto add card
-    gets active
-    :type _time_auto_add_card_transaction_start: str
-    :param _time_auto_add_card_transaction_end: The time when auto add card gets
-    inactive
-    :type _time_auto_add_card_transaction_end: str
-    :param _card_ids: The ids of the cards that have been added to registry
-    membership setting.
-    :type _card_ids: list[str]
-    :param _card_labels: The cards of which payments will be automatically added
-    to this Registry.
-    :type _card_labels: list[LabelCard]
-    """
-
-    _auto_add_card_transaction = None
-    _time_auto_add_card_transaction_start = None
-    _time_auto_add_card_transaction_end = None
-    _card_ids = None
-    _card_labels = None
-    _auto_add_card_transaction_field_for_request = None
-    _time_auto_add_card_transaction_start_field_for_request = None
-    _time_auto_add_card_transaction_end_field_for_request = None
-    _card_ids_field_for_request = None
-
-    def __init__(self, auto_add_card_transaction=None, time_auto_add_card_transaction_start=None, time_auto_add_card_transaction_end=None, card_ids=None):
-        """
-        :param auto_add_card_transaction: The setting for for adding automatically
-        card transactions to the registry.
-        :type auto_add_card_transaction: str
-        :param time_auto_add_card_transaction_start: The time when auto add card
-        gets active
-        :type time_auto_add_card_transaction_start: str
-        :param time_auto_add_card_transaction_end: The time when auto add card gets
-        inactive
-        :type time_auto_add_card_transaction_end: str
-        :param card_ids: The ids of the cards that have been added to registry
-        membership setting.
-        :type card_ids: list[str]
-        """
-
-        self._auto_add_card_transaction_field_for_request = auto_add_card_transaction
-        self._time_auto_add_card_transaction_start_field_for_request = time_auto_add_card_transaction_start
-        self._time_auto_add_card_transaction_end_field_for_request = time_auto_add_card_transaction_end
-        self._card_ids_field_for_request = card_ids
-
-    @property
-    def auto_add_card_transaction(self):
-        """
-        :rtype: str
-        """
-
-        return self._auto_add_card_transaction
-
-    @property
-    def time_auto_add_card_transaction_start(self):
-        """
-        :rtype: str
-        """
-
-        return self._time_auto_add_card_transaction_start
-
-    @property
-    def time_auto_add_card_transaction_end(self):
-        """
-        :rtype: str
-        """
-
-        return self._time_auto_add_card_transaction_end
-
-    @property
-    def card_ids(self):
-        """
-        :rtype: list[str]
-        """
-
-        return self._card_ids
-
-    @property
-    def card_labels(self):
-        """
-        :rtype: list[LabelCard]
-        """
-
-        return self._card_labels
-
-    def is_all_field_none(self):
-        """
-        :rtype: bool
-        """
-
-        if self._auto_add_card_transaction is not None:
-            return False
-
-        if self._time_auto_add_card_transaction_start is not None:
-            return False
-
-        if self._time_auto_add_card_transaction_end is not None:
-            return False
-
-        if self._card_ids is not None:
-            return False
-
-        if self._card_labels is not None:
-            return False
-
-        return True
-
-    @staticmethod
-    def from_json(json_str):
-        """
-        :type json_str: str
-        
-        :rtype: RegistryMembershipSetting
-        """
-
-        return converter.json_to_class(RegistryMembershipSetting, json_str)
-
-
-class RegistrySettlementItem(BunqModel):
-    """
-    :param _amount: The amount of the RegistrySettlementItem.
-    :type _amount: Amount
-    :param _membership_paying: The membership of the user that has to pay.
-    :type _membership_paying: endpoint.RegistryMembership
-    :param _membership_receiving: The membership of the user that will receive
-    money.
-    :type _membership_receiving: endpoint.RegistryMembership
-    :param _paying_user_alias: The LabelMonetaryAccount of the user that has to
-    pay the request.
-    :type _paying_user_alias: MonetaryAccountReference
-    :param _receiving_user_alias: The LabelMonetaryAccount of the user that will
-    receive the amount.
-    :type _receiving_user_alias: MonetaryAccountReference
-    """
-
-    _amount = None
-    _membership_paying = None
-    _membership_receiving = None
-    _paying_user_alias = None
-    _receiving_user_alias = None
-
-    @property
-    def amount(self):
-        """
-        :rtype: Amount
-        """
-
-        return self._amount
-
-    @property
-    def membership_paying(self):
-        """
-        :rtype: endpoint.RegistryMembership
-        """
-
-        return self._membership_paying
-
-    @property
-    def membership_receiving(self):
-        """
-        :rtype: endpoint.RegistryMembership
-        """
-
-        return self._membership_receiving
-
-    @property
-    def paying_user_alias(self):
-        """
-        :rtype: MonetaryAccountReference
-        """
-
-        return self._paying_user_alias
-
-    @property
-    def receiving_user_alias(self):
-        """
-        :rtype: MonetaryAccountReference
-        """
-
-        return self._receiving_user_alias
-
-    def is_all_field_none(self):
-        """
-        :rtype: bool
-        """
-
-        if self._amount is not None:
-            return False
-
-        if self._membership_paying is not None:
-            return False
-
-        if self._membership_receiving is not None:
-            return False
-
-        if self._paying_user_alias is not None:
-            return False
-
-        if self._receiving_user_alias is not None:
-            return False
-
-        return True
-
-    @staticmethod
-    def from_json(json_str):
-        """
-        :type json_str: str
-        
-        :rtype: RegistrySettlementItem
-        """
-
-        return converter.json_to_class(RegistrySettlementItem, json_str)
 class MonetaryAccountReference(BunqModel):
     """
     :type pointer: Pointer
