@@ -84,8 +84,8 @@ setup(
 
     # Run-time dependencies of the project. These will be installed by pip.
     install_requires=[
-        'aenum>=2.2.4,<3.0.0',
-        'chardet>=3.0.4,<4.0.0',
+        'aenum>=2.2.4,<3.1.11',
+        'chardet>=3.0.4,<5.1.0',
         'pycryptodomex>=3.9.8,<4.0.0',
         'requests>=2.24.0,<3.0.0',
         'simplejson>=3.17.2,<4.0.0',
